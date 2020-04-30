@@ -19,6 +19,9 @@ int CLK = 2;
 int DT = 3;
 int SW = 4;
 
+// Auto Button
+int btn = 12;
+
 int SWopen;
 int currentState;
 int lastState;
@@ -131,7 +134,6 @@ void heightServo()
 
     }
   }
-
   ServoHeight.write(heightCounter);
 }
 
@@ -158,7 +160,39 @@ void baseServo()
     }
   }
 
-  Servo1.write((counter));
+  Servo1.write(counter);
+}
+
+void autoTask()
+{
+  
+  if (digitalRead(btn) == 0)
+  {
+
+    Servo1.write(170);
+    delay(1000);
+    ClawHeight.write(115);
+    delay(1000);
+    ServoClaw.write(120);
+    delay(1000);
+    ServoClaw.write(140);
+    delay(1000);
+    ServoHeight.write(60);
+    delay(1000);
+    Servo1.write(80);
+    delay(1000);
+    ServoHeight.write(90);
+    //delay(1000);
+    ClawHeight.write(40);
+    delay(1000);
+    Servo1.write(0);
+    delay(1000);
+    ServoClaw.write(120);
+    delay(1000);
+    ServoClaw.write(140);
+    delay(1000);
+
+  }
 }
 
 void setup()
@@ -177,6 +211,8 @@ void setup()
   ServoHeight.write(heightCounter);
   ClawHeight.write(clawHeightCounter);
 
+  // Button
+  pinMode(btn, INPUT_PULLUP);
 
   // Encoders
   pinMode(CLK, INPUT);
@@ -198,4 +234,5 @@ void loop()
   clawServo();
   heightServo();
   clawHeightServo();
+  autoTask();
 }
