@@ -42,9 +42,9 @@ int heightCounter = 90; // Initial State for the height
 
 void clawServo()
 {
-  int btnPressed = digitalRead(SW);
+  int btnPressed = digitalRead(heightSW);
 
-  if (btnPressed == 0)
+  if (digitalRead(heightSW) == 0)
   {
     Serial.println("Button Pressed");
     SWopen = !SWopen;
@@ -69,7 +69,7 @@ void clawHeightServo()
 
   if (goingUp) {
 
-    if (digitalRead(heightSW) == 0)
+    if (digitalRead(SW) == 0)
     {
 
       if (clawHeightCounter >= 120)
@@ -88,7 +88,7 @@ void clawHeightServo()
   else
   {
 
-    if (digitalRead(heightSW) == 0)
+    if (digitalRead(SW) == 0)
     {
       if (clawHeightCounter <= 60)
       {
@@ -268,3 +268,12 @@ void loop()
 //
 //  Lowest value: 120 (Open)
 //  Highest value: 145 (Close)
+
+
+/////////////////////
+// Servo Wire Colors
+///////////////////
+
+// Brown: Connects to GND
+// Orange: Connects to 5v or (+)
+// Yellow: Connects to the pin number you define
