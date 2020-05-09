@@ -90,7 +90,7 @@ void clawHeightServo()
 
     if (digitalRead(heightSW) == 0)
     {
-      if (clawHeightCounter <= 70)
+      if (clawHeightCounter <= 60)
       {
         goingUp = true;
         return;
@@ -236,3 +236,35 @@ void loop()
   clawHeightServo();
   autoTask();
 }
+
+///////////////////
+// Notes on servos
+//////////////////
+
+// These notes explain the purpose of each servo and the range of their values
+
+
+//  clawHeightServo() Controls how high the claw servo will go up.
+//
+//  Lowest value: 60
+//  Highest value: 120
+
+
+//  heightServo() Controls how forward the arm will go. It's like the backbone.
+//                (Note): The higher the claw is, the more backward it will go
+//
+//  Lowest value: 40
+//  Highest value: 120
+
+
+//  baseServo() Controls the base to turn the arm left or right
+//
+//
+//  Lowest value: 0 (All the way to the right)
+//  Highest value: 170 (All the way to the Left)
+
+
+//  clawServo() Controls the claw to Open or Close
+//
+//  Lowest value: 120 (Open)
+//  Highest value: 145 (Close)
