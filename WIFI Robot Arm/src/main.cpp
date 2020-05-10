@@ -9,7 +9,8 @@ Servo BaseServo;
 ESP8266WebServer server(80);
 Adafruit_SSD1306 display(-1);
 
-int greenLED = 16;
+int heightClaw = 16;
+Servo HeightClaw;
 
 int blueLED = 0;
 
@@ -46,11 +47,14 @@ const char MAIN_page[] PROGMEM = R"=====(
 <div class="container">
   <h3>Base Controls</h3>
   <input type="range" min="0" max="180" value="90" class="slider" id="myRange">
+  <h3>CLaw Height Controls</h3>
+  <input type="range" min="60" max="120" value="90" class="slider" id="clawHeight">
 </div>
 
 <script>
 
   var slider = document.getElementById("myRange");
+  var clawHeightSlider = document.getElementById("clawHeight");
 
   slider.oninput = function() {
     console.log(this.value);
@@ -60,6 +64,17 @@ const char MAIN_page[] PROGMEM = R"=====(
   function pwm_change(val) {
     var xhttp = new XMLHttpRequest();
     xhttp.open("GET", "sliderURL?sliderVal="+val, true);
+    xhttp.send();
+  }
+
+  clawHeightSlider.oninput = function() {
+    console.log(this.value);
+    clawHeight_change(this.value);
+  }
+
+  function clawHeight_change(val) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open("GET", "clawHeightURL?clawHeightSliderVal="+val, true);
     xhttp.send();
   }
 
@@ -90,7 +105,16 @@ void handle_baseServo ()
 
 }
 
-void setup() {
+void handle_clawHeight(){
+  String clawHeight_val = server.arg("clawHeightSliderVal");
+  Serial.print("slider val: ");
+  Serial.println(clawHeight_val);
+  showData(clawHeight_val, "Claw height Servo");
+  HeightClaw.write(clawHeight_val.toInt());
+  server.send(200, "text/plain", clawHeight_val);
+}
+
+void setup(){
   Serial.begin(9600);
 
   WiFi.begin("Prettyfly-2.4G", "29912991");
@@ -108,15 +132,18 @@ void setup() {
   ///////////////////////////////////////////
 
   server.on("/", []() { server.send_P(200, "text/html", MAIN_page); }); //Which routine to handle at root
-  server.on("/sliderURL", handle_baseServo);                               // handles the PWM values
+  server.on("/sliderURL", handle_baseServo);
+  server.on("/clawHeightURL", handle_clawHeight);
 
   server.begin();
 
   // Servos
-  
+
   BaseServo.attach(baseServo);
   BaseServo.write(90);
 
+  HeightClaw.attach(heightClaw);
+  HeightClaw.write(70);
 
   // Display
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
