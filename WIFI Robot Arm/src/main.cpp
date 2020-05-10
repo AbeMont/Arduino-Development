@@ -6,15 +6,16 @@
 int baseServo = 2;
 Servo BaseServo;
 
-ESP8266WebServer server(80);
-Adafruit_SSD1306 display(-1);
-
 int heightClaw = 16;
 Servo HeightClaw;
 
-int blueLED = 0;
+int extendServo = 0;
+Servo ExtendServo;
 
 int yellowLED = 15;
+
+ESP8266WebServer server(80);
+Adafruit_SSD1306 display(-1);
 
 const char MAIN_page[] PROGMEM = R"=====(
 <!DOCTYPE html>
@@ -49,16 +50,29 @@ const char MAIN_page[] PROGMEM = R"=====(
   <input type="range" min="0" max="180" value="90" class="slider" id="myRange">
   <h3>CLaw Height Controls</h3>
   <input type="range" min="60" max="120" value="90" class="slider" id="clawHeight">
+  <h3>Extend Forward/Back Controls</h3>
+  <input type="range" min="40" max="120" value="90" class="slider" id="extend">
 </div>
 
 <script>
 
   var slider = document.getElementById("myRange");
   var clawHeightSlider = document.getElementById("clawHeight");
+  var extendSlider = document.getElementById("extend");
 
   slider.oninput = function() {
     console.log(this.value);
     pwm_change(this.value);
+  }
+
+  clawHeightSlider.oninput = function() {
+    console.log(this.value);
+    clawHeight_change(this.value);
+  }
+
+  extendSlider.oninput = function() {
+    console.log(this.value);
+    extend_change(this.value);
   }
 
   function pwm_change(val) {
@@ -67,14 +81,15 @@ const char MAIN_page[] PROGMEM = R"=====(
     xhttp.send();
   }
 
-  clawHeightSlider.oninput = function() {
-    console.log(this.value);
-    clawHeight_change(this.value);
-  }
-
   function clawHeight_change(val) {
     var xhttp = new XMLHttpRequest();
     xhttp.open("GET", "clawHeightURL?clawHeightSliderVal="+val, true);
+    xhttp.send();
+  }
+
+  function extend_change(val) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open("GET", "extendURL?extendSliderVal="+val, true);
     xhttp.send();
   }
 
@@ -86,6 +101,7 @@ const char MAIN_page[] PROGMEM = R"=====(
 
 void showData(String data, String servo)
 {
+  display.clearDisplay();
   display.setCursor(10, 0);
   display.println("Moving " + servo);
   display.setCursor(10, 10);
@@ -114,6 +130,16 @@ void handle_clawHeight(){
   server.send(200, "text/plain", clawHeight_val);
 }
 
+void handle_extend()
+{
+  String extend_val = server.arg("extendSliderVal");
+  Serial.print("slider val: ");
+  Serial.println(extend_val);
+  showData(extend_val, "Extend Servo");
+  ExtendServo.write(extend_val.toInt());
+  server.send(200, "text/plain", extend_val);
+}
+
 void setup(){
   Serial.begin(9600);
 
@@ -134,6 +160,7 @@ void setup(){
   server.on("/", []() { server.send_P(200, "text/html", MAIN_page); }); //Which routine to handle at root
   server.on("/sliderURL", handle_baseServo);
   server.on("/clawHeightURL", handle_clawHeight);
+  server.on("/extendURL", handle_extend);
 
   server.begin();
 
@@ -144,6 +171,9 @@ void setup(){
 
   HeightClaw.attach(heightClaw);
   HeightClaw.write(70);
+
+  ExtendServo.attach(extendServo);
+  ExtendServo.write(90);
 
   // Display
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
