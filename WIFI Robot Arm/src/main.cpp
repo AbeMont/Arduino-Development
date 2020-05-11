@@ -35,17 +35,69 @@ const char MAIN_page[] PROGMEM = R"=====(
     font-family: consolas;
   }
   .container {
-    text-align:center;
+    text-align: center;
     width: 75%;
-    margin: auto;
+    margin: 0 auto 24px;
+    border: 1px solid lime;
+    padding: 8px 16px 60px;
+  }
+
+  .btn {
+    background-color: #000;
+    border: 1px solid lime;
+    color: lime;
+    padding: 16px;
+  }
+
+  .active {
+    background-color: Lime;
+    color:#000;
+  }
+
+  .img {
+    display: flex;
+    justify-content: center;
+    margin-top: 16px;
   }
 
   .slider {
-    width: 100%;
-  } 
+  -webkit-appearance: none;
+  width: 100%;
+  height: 15px;
+  border-radius: 5px;  
+  background: lime;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%; 
+  background: #000;
+  border: 1px solid lime;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #4CAF50;
+  cursor: pointer;
+}
+
 </style>
+
+<div class="img">
+  <img src="https://raw.githubusercontent.com/AbeMont/interactive-components/master/app/assets/img/AbeMonte-light.png" style="width: 200px;"/>
+</div>
  
-<h2 style="text-align:center;">Dr. Monty's <br/> Wifi Robot Arm<h2>
+<h2 style="text-align:center;">Dr. Monty's Wifi Robot Arm</h2>
  
 <div class="container">
 
@@ -111,6 +163,7 @@ const char MAIN_page[] PROGMEM = R"=====(
   function btn_change(val) {
     var xhttp = new XMLHttpRequest();
     xhttp.open("GET", "buttonURL", true);
+    clawBtn.classList.toggle('active');
     xhttp.send();
   }
 
@@ -164,7 +217,7 @@ void handle_extend()
 void handle_button(){
 
   clawopen = !clawopen;
-  clawopen ? ClawServo.write(120) : ClawServo.write(145);
+  clawopen ? ClawServo.write(110) : ClawServo.write(145);
   showData(String(clawopen), "Claw");
   server.send(200, "text/plain", String(clawopen));
 }
