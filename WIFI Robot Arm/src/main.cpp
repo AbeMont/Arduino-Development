@@ -22,76 +22,12 @@ Adafruit_SSD1306 display(-1);
 const char MAIN_page[] PROGMEM = R"=====(
 <!DOCTYPE html>
 <html>
+
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
+
 <body>
-
-<style>
-  body {
-    margin:0;
-    background-color:#000;
-    color: Lime;
-    font-family: consolas;
-  }
-  .container {
-    text-align: center;
-    width: 75%;
-    margin: 0 auto 24px;
-    border: 1px solid lime;
-    padding: 8px 16px 60px;
-  }
-
-  .btn {
-    background-color: #000;
-    border: 1px solid lime;
-    color: lime;
-    padding: 16px;
-  }
-
-  .active {
-    background-color: Lime;
-    color:#000;
-  }
-
-  .img {
-    display: flex;
-    justify-content: center;
-    margin-top: 16px;
-  }
-
-  .slider {
-  -webkit-appearance: none;
-  width: 100%;
-  height: 15px;
-  border-radius: 5px;  
-  background: lime;
-  outline: none;
-  opacity: 0.7;
-  -webkit-transition: .2s;
-  transition: opacity .2s;
-}
-
-.slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 25px;
-  height: 25px;
-  border-radius: 50%; 
-  background: #000;
-  border: 1px solid lime;
-  cursor: pointer;
-}
-
-.slider::-moz-range-thumb {
-  width: 25px;
-  height: 25px;
-  border-radius: 50%;
-  background: #4CAF50;
-  cursor: pointer;
-}
-
-</style>
 
 <div class="img">
   <img src="https://raw.githubusercontent.com/AbeMont/interactive-components/master/app/assets/img/AbeMonte-light.png" style="width: 200px;"/>
@@ -122,50 +58,55 @@ const char MAIN_page[] PROGMEM = R"=====(
   var extendSlider = document.getElementById("extend");
   var clawBtn = document.getElementById("clawBtn");
 
-  slider.oninput = function() {
-    console.log(this.value);
-    pwm_change(this.value);
-  }
+  var robotInputs = [
+    {
+      input: slider,
+      url: "sliderURL?sliderVal="
+    },
+    {
+      input: clawHeightSlider,
+      url: "clawHeightURL?clawHeightSliderVal="
+    },
+    {
+      input: extendSlider,
+      url: "extendURL?extendSliderVal="
+    },
+    {
+      input: clawBtn,
+      url: "buttonURL"
+    }
+  ];
 
-  clawHeightSlider.oninput = function() {
-    console.log(this.value);
-    clawHeight_change(this.value);
-  }
+  robotInputs.forEach(function(inputEl){
 
-  extendSlider.oninput = function() {
-    console.log(this.value);
-    extend_change(this.value);
-  }
+    if(inputEl.input == clawBtn){
 
-  clawBtn.onclick = function(){  
-    console.log(this.value);
-    btn_change();
-  }
+      inputEl.input.onclick = function(){  
+        console.log(this.value);
+        btn_change();
+      }
 
-  function pwm_change(val) {
-    var xhttp = new XMLHttpRequest();
-    xhttp.open("GET", "sliderURL?sliderVal="+val, true);
-    xhttp.send();
-  }
+      function btn_change(val) {
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("GET", inputEl.url, true);
+        inputEl.input.classList.toggle('active');
+        xhttp.send();
+      }
 
-  function clawHeight_change(val) {
-    var xhttp = new XMLHttpRequest();
-    xhttp.open("GET", "clawHeightURL?clawHeightSliderVal="+val, true);
-    xhttp.send();
-  }
+    }
 
-  function extend_change(val) {
-    var xhttp = new XMLHttpRequest();
-    xhttp.open("GET", "extendURL?extendSliderVal="+val, true);
-    xhttp.send();
-  }
+    inputEl.input.oninput = function() {
+      console.log(this.value);
+      pwm_change(this.value);
+    }
 
-  function btn_change(val) {
-    var xhttp = new XMLHttpRequest();
-    xhttp.open("GET", "buttonURL", true);
-    clawBtn.classList.toggle('active');
-    xhttp.send();
-  }
+    function pwm_change(val) {
+      var xhttp = new XMLHttpRequest();
+      xhttp.open("GET", inputEl.url+val, true);
+      xhttp.send();
+    }
+
+  });
 
 </script>
  
