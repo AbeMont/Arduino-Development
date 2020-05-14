@@ -13,12 +13,12 @@ Servo BaseServo;
 int heightClaw = 16;
 Servo HeightClaw;
 
-int extendServo = 0;
-Servo ExtendServo;
-
-int clawServo = 15;
+int clawServo = 0;
 bool clawopen = false;
 Servo ClawServo;
+
+int extendServo = 15;
+Servo ExtendServo;
 
 // We start our instances of our server and displayu
 
