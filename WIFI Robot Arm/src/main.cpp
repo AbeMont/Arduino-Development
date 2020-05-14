@@ -3,6 +3,10 @@
 #include <Servo.h>
 #include <Adafruit_SSD1306.h>
 
+// IMPORTANT!!! For the servos, it is recommended that we use 5V.
+// If not, it may cause some unpredicatble shaking.
+// Use the (USB) pin port for our positive (+) connection instead.
+
 int baseServo = 2;
 Servo BaseServo;
 
@@ -15,6 +19,8 @@ Servo ExtendServo;
 int clawServo = 15;
 bool clawopen = false;
 Servo ClawServo;
+
+// We start our instances of our server and displayu
 
 ESP8266WebServer server(80);
 Adafruit_SSD1306 display(-1);
