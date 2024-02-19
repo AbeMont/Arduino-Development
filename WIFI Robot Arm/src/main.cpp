@@ -1,6 +1,7 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <Servo.h>
+//#include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 
 // IMPORTANT!!! For the servos, it is recommended that we use 5V.
@@ -23,7 +24,10 @@ Servo ExtendServo;
 // We start our instances of our server and displayu
 
 ESP8266WebServer server(80);
-Adafruit_SSD1306 display(-1);
+
+#define SCREEN_WIDTH 128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 32 // OLED display height, in pixels
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
 const char MAIN_page[] PROGMEM = R"=====(
 <!DOCTYPE html>
@@ -237,7 +241,7 @@ void setup()
 {
   Serial.begin(9600);
 
-  WiFi.begin("Prettyfly-2.4G", "29912991");
+  WiFi.begin("XXXXXX", "XXXXXX");
 
   //////////////////////////////////////////////
   while (WiFi.status() != WL_CONNECTED)
@@ -277,7 +281,7 @@ void setup()
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
   // Clear the buffer.
   display.clearDisplay();
-  display.setTextSize(0.8);
+  display.setTextSize(1);
   display.setTextColor(WHITE);
 
   display.setCursor(10, 0);
@@ -287,6 +291,7 @@ void setup()
   display.display();
   display.startscrollright(0x00, 0x00);
   display.clearDisplay();
+  //display.display();
 }
 
 void loop()
